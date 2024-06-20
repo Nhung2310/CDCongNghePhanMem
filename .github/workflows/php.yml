@@ -16,13 +16,19 @@ jobs:
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.DKEY }}
+          ssh-private-key: ${{ secrets.VPSKEY }}  # Sử dụng secret có tên VPSKEY
+
+      - name: Add VPS to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          touch ~/.ssh/known_hosts
+          ssh-keyscan -H your-vps-ip >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
       - name: Deploy to VPS
         run: |
-          ssh-keyscan -H your-vps-ip >> ~/.ssh/known_hosts
           ssh user@your-vps-ip << 'EOF'
             cd /var/www/html/
             git pull origin main
-            # Add any other commands you need to run after pulling the code
+            # Thêm các lệnh khác bạn cần thiết để triển khai
           EOF
