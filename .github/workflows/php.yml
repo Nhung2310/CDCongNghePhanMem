@@ -20,7 +20,8 @@ jobs:
 
       - name: Deploy to VPS
         run: |
-          ssh -o StrictHostKeyChecking=no user@your-vps-ip << 'EOF'
+          ssh-keyscan -H your-vps-ip >> ~/.ssh/known_hosts
+          ssh user@your-vps-ip << 'EOF'
             cd /var/www/html/
             git pull origin main
             # Add any other commands you need to run after pulling the code
