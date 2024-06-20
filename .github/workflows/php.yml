@@ -13,14 +13,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.VPS_DEPLOY_KEY }}
-
       - name: Deploy to VPS
+        env:
+          DEPLOY_KEY: ${{ secrets.VPSKEY }}
         run: |
-          ssh -o StrictHostKeyChecking=no root@45.76.159.76 << 'EOF'
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPSKEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H your-vps-ip >> ~/.ssh/known_hosts
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no root@your-vps-ip << 'EOF'
             cd /var/www/html/
             git pull origin main
             # Thêm các lệnh khác bạn cần thiết để triển khai
