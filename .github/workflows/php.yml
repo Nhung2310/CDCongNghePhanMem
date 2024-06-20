@@ -1,4 +1,4 @@
-name: Deploy to VPS Server
+name: Deploy to VPS
 
 on:
   push:
@@ -10,18 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install SSH key
+      - name: Setup SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Install dependencies
-        run: |
-          composer install --no-dev
+          ssh-private-key: ${{ secrets.DKEY }}
 
       - name: Deploy to VPS
         run: |
-          rsync -avz --exclude '.git/' --exclude '.github/' --exclude 'wp-config.php' ./ user@your-vps-ip:/path/to/wordpress/
+          ssh -o StrictHostKeyChecking=no user@your-vps-ip << 'EOF'
+            cd /var/www/html/
+            git pull origin main
+            # Add any other commands you need to run after pulling the code
+          EOF
